@@ -1,0 +1,6 @@
+{
+ "format": "nte-icons",
+ "format_version": 1,
+ "_note": "The single-file build's stand-in manifest. Empty on purpose: with no entries, Icon renders the fallback and the page never requests an image it does not carry.",
+ "files": {}
+}

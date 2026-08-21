@@ -1,0 +1,7 @@
+node_modules/
+*.local
+.DS_Store
+.tsbuild/
+
+# Build output; the deploy copies it, git does not carry it.
+dist/

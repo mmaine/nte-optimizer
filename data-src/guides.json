@@ -1,0 +1,13 @@
+{
+ "format": "nte-guides",
+ "format_version": 1,
+ "_source": "Prydwen build guides, entered by hand and reviewed before committing.",
+ "_why_not_scraped": "Prydwen's character pages are client-rendered, so a plain fetch returns only navigation chrome, and their Gatsby /page-data/ endpoint answers 410 Gone. Their robots.txt does allow content pages with a 10 second crawl-delay, so a headless render would be permitted - it is just not something the build can do unattended. Entries below are typed in from the published guide.",
+ "_shape": {
+  "key": "the GA_<key>_* ability key, so it joins to a capture directly",
+  "variants": "one per published priority set (Main DPS, SubDPS, Break, DoT)",
+  "targets": "recommended endgame stats, raw stat ids, percentages as fractions",
+  "priority": "substat ranking, best first; weights are derived from position"
+ },
+ "characters": []
+}

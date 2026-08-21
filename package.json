@@ -1,0 +1,37 @@
+{
+  "name": "nte-optimizer",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Gear optimizer for Neverness to Everness. Static, no server.",
+  "scripts": {
+    "dev": "vite",
+    "build": "npm run generate && tsc -b && vite build",
+    "build:single": "npm run build && vite build --config vite.single.config.ts",
+    "preview": "vite preview",
+    "serve:dist": "python3 -m http.server -d dist",
+    "generate": "npm run gen:gamedata && npm run gen:tilings",
+    "gen:gamedata": "node --experimental-strip-types tools/prune-gamedata.ts",
+    "gen:tilings": "node --experimental-strip-types tools/precompute-tilings.ts",
+    "gen:icons": "node --experimental-strip-types tools/fetch-icons.ts",
+    "bench": "node --experimental-strip-types tools/bench-solve.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc -b --noEmit",
+    "check:guides": "node --experimental-strip-types tools/check-guides.ts"
+  },
+  "dependencies": {
+    "idb": "8.0.3",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  },
+  "devDependencies": {
+    "@types/node": "26.2.0",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.4",
+    "@vitejs/plugin-react": "6.1.0",
+    "typescript": "5.9.3",
+    "vite": "8.2.2",
+    "vitest": "4.1.11"
+  }
+}
