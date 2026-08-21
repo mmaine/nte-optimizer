@@ -1,14 +1,11 @@
 #!/usr/bin/env sh
-# Build and publish to [removed].
-#
-# The homelab has no rsync, so the tree goes over as a tar stream. Caddy serves
-# /mnt/docker/appdata/caddy/sites/[removed] as /srv/[removed] (a
-# read-only bind mount declared in /mnt/docker/compose/caddy/docker-compose.yml),
-# so a deploy is a file copy - no container restart, no config reload.
+# Build and publish to a user-supplied static host.
 set -eu
 
-HOST="${DEPLOY_HOST:-hl}"
-DEST="${DEPLOY_DEST:-/mnt/docker/appdata/caddy/sites/[removed]}"
+: "${DEPLOY_HOST:?set DEPLOY_HOST}"
+: "${DEPLOY_DEST:?set DEPLOY_DEST}"
+HOST="$DEPLOY_HOST"
+DEST="$DEPLOY_DEST"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 
 cd "$ROOT"
@@ -20,6 +17,6 @@ npm run build:single
 # served forever, since /assets/* is cached as immutable.
 tar -C dist -cz . | ssh "$HOST" "rm -rf '$DEST'/* && tar -C '$DEST' -xz"
 
-printf '\ndeployed. checking...\n'
-curl -fsS -o /dev/null -w '[removed] -> %{http_code}\n' [removed]
-curl -fsS -o /dev/null -w '[removed] -> %{http_code} (%{size_download} bytes)\n' [removed]
+if [ -n "${DEPLOY_URL:-}" ]; then
+  curl -fsS -o /dev/null -w '%{http_code}\n' "$DEPLOY_URL"
+fi

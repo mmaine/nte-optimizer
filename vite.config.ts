@@ -1,8 +1,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
-// `base: './'` keeps the build working unchanged at [removed], under a
-// plain `python3 -m http.server -d dist`, and inside the single-file build.
+// Relative assets keep the build portable across static hosts, local HTTP, and the single-file build.
 export default defineConfig({
   base: "./",
   plugins: [react()],
