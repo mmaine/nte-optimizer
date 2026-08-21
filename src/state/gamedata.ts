@@ -17,6 +17,10 @@ export interface Esper {
   element: string | null;
   rarity: number;
   icon: string;
+  /** 256px avatar; falls back to `icon` at fetch time. */
+  iconBig: string | null;
+  /** Full card art. */
+  iconGacha: string | null;
   stats: Array<{ id_stats: string; name: string; bShowPercent: boolean; values: number[] }>;
   slots: number[][];
   ownerGridCount: number;
@@ -49,6 +53,8 @@ export interface GameData {
   format: string;
   format_version: number;
   generated: string;
+  /** The game's own label for each stat id; see `domain/statlabels.ts`. */
+  statNames: Record<string, { name: string; percent: boolean }>;
   espers: Esper[];
   arcs: Arc[];
   arcEffects: Record<string, { name: string; effects: ArcEffect[] }>;

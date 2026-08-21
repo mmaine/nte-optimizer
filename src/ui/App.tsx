@@ -47,10 +47,31 @@ function Shell({ data }: { data: LoadedData }) {
   const route = useRoute();
   const db = state.data.db;
 
-  const ownerOf = (instance: string): string | null => {
+  /**
+   * Owner groups get a stable number, not their raw id.
+   *
+   * "group 0000000088" told the player nothing they could act on. The number is
+   * the group's position in the sorted list of groups, so it is stable within an
+   * import and the same group reads the same everywhere; the raw id stays in the
+   * title attribute for anyone debugging a capture.
+   */
+  const groupNumbers = new Map(
+    [...new Set(db.equipment.map((row) => row.ownerGroup).filter((id) => id !== null))]
+      .sort()
+      .map((id, index) => [id, index + 1] as const),
+  );
+
+  const ownerOf = (instance: string): { label: string; named: boolean; title?: string } | null => {
     const row = db.equipment.find((entry) => entry.instance === instance);
     if (!row) return null;
-    return resolveCharacter(row, db.ownerNames) ?? `group ${row.ownerGroup?.slice(0, 8)}`;
+    const named = resolveCharacter(row, db.ownerNames);
+    if (named) return { label: named, named: true };
+    if (!row.ownerGroup) return null;
+    return {
+      label: `Unnamed group ${groupNumbers.get(row.ownerGroup) ?? "?"}`,
+      named: false,
+      title: row.ownerGroup,
+    };
   };
 
   const todo = todoInGame(db);
@@ -84,30 +105,25 @@ function Shell({ data }: { data: LoadedData }) {
         </p>
       )}
 
-      <DataPanel gamedataVersion={data.gamedata.generated} />
-
-      {todo.size > 0 && (
-        <details className="todo">
-          <summary>To do in game ({[...todo.values()].flat().length} pieces)</summary>
-          {[...todo].map(([character, rows]) => (
-            <p key={character || "unassigned"}>
-              <strong>{character || "unassigned"}</strong>: {rows.length} pieces
-            </p>
-          ))}
-        </details>
-      )}
-
       <main>
         {route.tab === "cartridges" && (
-          <ItemTable kind="cartridge" items={db.items} ownerOf={ownerOf} />
+          <ItemTable kind="cartridge" items={db.items} gamedata={data.gamedata} ownerOf={ownerOf} />
         )}
         {route.tab === "modules" && (
-          <ItemTable kind="module" items={db.items} ownerOf={ownerOf} />
+          <ItemTable kind="module" items={db.items} gamedata={data.gamedata} ownerOf={ownerOf} />
         )}
         {route.tab === "characters" && (
-          <CharactersTab data={data} route={route} unnamedGroups={unnamed} />
+          <CharactersTab
+            data={data}
+            route={route}
+            unnamedGroups={unnamed}
+            groupNumbers={groupNumbers}
+          />
         )}
         {route.tab === "team" && <TeamTab data={data} />}
+        {route.tab === "data" && (
+          <DataPanel gamedataVersion={data.gamedata.generated} todo={todo} />
+        )}
       </main>
     </div>
   );

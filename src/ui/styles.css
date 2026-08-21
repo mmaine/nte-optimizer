@@ -164,3 +164,112 @@ table.items .subs { color: var(--dim); font-size: 0.78rem; }
 
 .boards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; margin-top: 1rem; }
 .boards .assignment { border: 1px solid var(--line); border-radius: 8px; padding: 0.7rem 0.8rem; background: var(--panel); }
+
+/* ---- Denser layout -------------------------------------------------------
+   The app is a reference you read while alt-tabbing to the game, so vertical
+   space is the scarce resource. Wider column, tighter rows, smaller base type. */
+.app { max-width: 1500px; padding: 1rem 1.25rem 3rem; font-size: 0.9rem; }
+header { margin-bottom: 0.4rem; }
+h1 { margin-bottom: 0.4rem; }
+.items td, .items th { padding: 0.25rem 0.5rem; }
+.actions { margin: 0.6rem 0; }
+.result { margin-top: 0.6rem; }
+
+/* ---- Character header ---------------------------------------------------- */
+.character-head {
+  display: flex;
+  align-items: stretch;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--panel);
+}
+.character-head .portrait {
+  width: 190px;
+  height: 128px;
+  object-fit: cover;
+  /* The art is a full card: crop to the face rather than shrinking the whole
+     thing to a letterbox. */
+  object-position: 50% 22%;
+  flex: none;
+}
+.character-head-text { display: flex; flex-direction: column; justify-content: center; gap: 0.3rem; padding: 0.6rem 0.4rem; }
+.character-head-text h2 { display: flex; align-items: center; gap: 0.6rem; margin: 0; font-size: 1.25rem; }
+.character-head-text p { margin: 0; font-size: 0.85rem; }
+
+/* ---- Build: board beside its legend, cartridge underneath ---------------- */
+.build { margin: 0.6rem 0; }
+.build-main { display: flex; gap: 1rem; align-items: flex-start; flex-wrap: wrap; }
+.build .board { margin: 0; flex: none; }
+
+.legend { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.25rem; flex: 1 1 380px; min-width: 320px; }
+.legend-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.3rem 0.5rem;
+  border: 1px solid var(--line);
+  border-left-width: 4px;
+  border-radius: 6px;
+  background: #171a20;
+}
+.legend-row--hot { background: #1e222a; border-color: var(--accent); }
+.legend-index {
+  flex: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 4px;
+  display: grid;
+  place-items: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #10121a;
+}
+
+.item-line { display: flex; flex-direction: column; gap: 0.15rem; min-width: 0; }
+.item-line-head { display: flex; align-items: center; gap: 0.45rem; flex-wrap: wrap; font-size: 0.85rem; }
+.item-line-stats { display: flex; flex-wrap: wrap; gap: 0.15rem 0.7rem; font-size: 0.8rem; color: var(--dim); }
+.item-line-stats .main { color: var(--text); }
+.item-line-stats .main .stat-pair b { color: var(--accent); }
+.stat-pair { display: inline-flex; gap: 0.3rem; }
+.stat-pair b { font-weight: 600; }
+/* A label the game does not itself provide, marked so it is never mistaken for
+   the game's own wording. */
+.stat--derived { border-bottom: 1px dotted var(--line); }
+.worn { color: var(--warn); font-size: 0.75rem; }
+
+.cartridge-box {
+  margin: 0.6rem auto 0;
+  max-width: 620px;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--accent);
+  border-radius: 6px;
+  background: #171a20;
+}
+.cartridge-box h4 { margin: 0 0 0.2rem; font-size: 0.75rem; font-weight: 600; color: var(--dim); text-transform: uppercase; letter-spacing: 0.05em; }
+
+.board-cell { position: relative; }
+.board-cell--hot { filter: brightness(1.35); }
+.board-index {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #10121a;
+  pointer-events: none;
+}
+
+.shape-icon { display: block; flex: none; }
+.shape-cell { display: flex; align-items: center; gap: 0.5rem; }
+.group-number { font-size: 0.85rem; }
+.unnamed { color: var(--warn); }
+
+.library { display: flex; flex-wrap: wrap; gap: 0 1.6rem; margin: 0 0 0.8rem; }
+.library div { display: flex; gap: 0.4rem; align-items: baseline; }
+.library dt { color: var(--dim); font-size: 0.8rem; }
+.library dd { margin: 0; font-weight: 600; }

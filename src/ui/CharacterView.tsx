@@ -31,9 +31,9 @@ import { equipmentOf, heldByOthers, resolveCharacter } from "../db/store.ts";
 import { createSolverHost, CancelledError, type SolveHandle } from "../solver/host.ts";
 import type { JobProgress, JobResult, SolveJob } from "../solver/job.ts";
 import { esperFor, type LoadedData } from "../state/gamedata.ts";
-import { Board } from "./Board.tsx";
-import { ItemCard } from "./ItemCard.tsx";
-import { Icon } from "./Icon.tsx";
+import { BuildLegend } from "./BuildLegend.tsx";
+import { Icon, Portrait } from "./Icon.tsx";
+import { StatName, useStatText } from "./Stat.tsx";
 import { useAppState, useStore } from "./useStore.ts";
 
 const DEFAULT_TARGETS: StatTarget[] = [
@@ -86,7 +86,6 @@ export function CharacterView({
   const [progress, setProgress] = useState<JobProgress | null>(null);
   const [running, setRunning] = useState(false);
   const [problem, setProblem] = useState<string | null>(null);
-  const [hovered, setHovered] = useState<number | null>(null);
   // R2. Off by default: taking gear off another character is a real cost, so it
   // is opted into rather than assumed.
   const [useEquipped, setUseEquipped] = useState(false);
@@ -127,6 +126,7 @@ export function CharacterView({
   }
 
   const trait = consoleTrait(esper);
+  const statText = useStatText(data.gamedata);
 
   const solve = async () => {
     setProblem(null);
@@ -217,19 +217,22 @@ export function CharacterView({
 
   return (
     <section className="character">
-      <h2 className="card-head">
-        <Icon entry={`esper:${characterId}`} alt={esper.name} size={56} />
-        {esper.name}{" "}
-        <span className="dim">
-          level {character?.level ?? "?"} · {character?.breakthroughs ?? "?"} breakthroughs
-        </span>
-      </h2>
-      <p className="dim">
-        {esper.element} · console trait{" "}
-        {trait
-          ? `${trait.name} +${trait.per} per Type ${trait.moduleCells === 2 ? "II" : "III"}`
-          : "none"}
-      </p>
+      <header className="character-head">
+        <Portrait entry={`portrait:${characterId}`} alt={esper.name} />
+        <div className="character-head-text">
+          <h2>
+            <Icon entry={`esper:${characterId}`} alt={esper.name} size={44} />
+            {esper.name}
+          </h2>
+          <p className="dim">
+            level {character?.level ?? "?"} · {character?.breakthroughs ?? "?"} breakthroughs ·{" "}
+            {esper.element} · console trait{" "}
+            {trait
+              ? `${trait.name} +${trait.per} per Type ${trait.moduleCells === 2 ? "II" : "III"}`
+              : "none"}
+          </p>
+        </div>
+      </header>
 
       <div className="arc-row">
         <label className="arc">
@@ -368,20 +371,15 @@ export function CharacterView({
         <p className="warning">No valid full-set build exists for this character and pool.</p>
       )}
 
-      <Board
+      <BuildLegend
         cells={cells}
         placement={placement}
         pieces={pieces}
-        onHover={setHovered}
-        labelFor={(piece) => {
-          const item = itemFor(piece);
-          return item ? `${item.shape ?? item.set} +${item.level}` : "";
-        }}
+        gamedata={data.gamedata}
+        db={db}
+        itemFor={itemFor}
+        cartridge={build ? db.items[build.cartridge] : undefined}
       />
-
-      {hovered !== null && hovered >= 0 && (
-        <ItemCard item={itemFor(hovered)} db={db} />
-      )}
 
       <SheetPanel
         sheet={sheet}
@@ -408,9 +406,11 @@ export function CharacterView({
               <tbody>
                 {report.stats.map((stat) => (
                   <tr key={stat.stat}>
-                    <td>{stat.stat}</td>
-                    <td>{stat.value.toFixed(3)}</td>
-                    <td className="dim">/ {stat.target}</td>
+                    <td>
+                      <StatName gamedata={data.gamedata} id={stat.stat} />
+                    </td>
+                    <td>{statText.value(stat.stat, stat.value)}</td>
+                    <td className="dim">/ {statText.value(stat.stat, stat.target)}</td>
                     <td>
                       <div className="bar">
                         <div style={{ width: `${stat.attainment * 100}%` }} />

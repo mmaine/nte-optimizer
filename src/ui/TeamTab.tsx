@@ -20,9 +20,8 @@ import type { JobProgress, JobResult, SolveJob } from "../solver/job.ts";
 import type { TeamAssignment } from "../solver/team.ts";
 import { heldByOthers } from "../db/store.ts";
 import { esperFor, type LoadedData } from "../state/gamedata.ts";
-import { Board } from "./Board.tsx";
+import { BuildLegend } from "./BuildLegend.tsx";
 import { Icon } from "./Icon.tsx";
-import { ItemCard } from "./ItemCard.tsx";
 import { useAppState, useStore } from "./useStore.ts";
 
 const TEAM_SIZE = 4;
@@ -267,7 +266,6 @@ function AssignedBuild({
 }) {
   const state = useAppState();
   const db = state.data.db;
-  const [hovered, setHovered] = useState<number | null>(null);
   const store = useStore();
   const build = entry.build;
 
@@ -309,19 +307,15 @@ function AssignedBuild({
         </p>
       )}
 
-      <Board
+      <BuildLegend
         cells={build.tiling.cells}
         placement={build.tiling.placement}
         pieces={build.tiling.pieces.length}
-        size={26}
-        onHover={setHovered}
-        labelFor={(piece) => {
-          const item = itemFor(piece);
-          return item ? `${item.shape ?? item.set} +${item.level}` : "";
-        }}
+        gamedata={data.gamedata}
+        db={db}
+        itemFor={itemFor}
+        cartridge={db.items[build.cartridge]}
       />
-
-      {hovered !== null && hovered >= 0 && <ItemCard item={itemFor(hovered)} db={db} />}
 
       <div className="actions">
         <button onClick={equip}>Equip on {entry.key}</button>

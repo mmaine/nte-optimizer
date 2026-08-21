@@ -14,17 +14,29 @@ import { useStore } from "./useStore.ts";
 
 import { STAT_SLOTS } from "../domain/statvec.ts";
 import type { ItemRow } from "../db/schema.ts";
+import type { GameData } from "../state/gamedata.ts";
+import { ShapeIcon } from "./ShapeIcon.tsx";
+import { StatName, useStatText } from "./Stat.tsx";
+
+export interface Owner {
+  label: string;
+  /** False when the capture knows the group but nobody has said whose it is. */
+  named: boolean;
+  title?: string;
+}
 
 export interface ItemTableProps {
   kind: "cartridge" | "module";
   items: readonly ItemRow[];
-  /** Owner group per instance, when the item is worn. */
-  ownerOf: (instance: string) => string | null;
+  gamedata: GameData;
+  /** Who wears this item, when anyone does. */
+  ownerOf: (instance: string) => Owner | null;
 }
 
 type SortKey = "itemId" | "level" | "set" | "shape";
 
-export function ItemTable({ kind, items, ownerOf }: ItemTableProps) {
+export function ItemTable({ kind, items, gamedata, ownerOf }: ItemTableProps) {
+  const statText = useStatText(gamedata);
   const [group, setGroup] = useState("");
   const [main, setMain] = useState("");
   const [sub, setSub] = useState("");
@@ -79,7 +91,7 @@ export function ItemTable({ kind, items, ownerOf }: ItemTableProps) {
             <option value="">any</option>
             {STAT_SLOTS.map((stat) => (
               <option key={stat} value={stat}>
-                {stat}
+                {statText.name(stat)}
               </option>
             ))}
           </select>
@@ -90,7 +102,7 @@ export function ItemTable({ kind, items, ownerOf }: ItemTableProps) {
             <option value="">any</option>
             {STAT_SLOTS.map((stat) => (
               <option key={stat} value={stat}>
-                {stat}
+                {statText.name(stat)}
               </option>
             ))}
           </select>
@@ -136,18 +148,45 @@ export function ItemTable({ kind, items, ownerOf }: ItemTableProps) {
               className={editing === item.instance ? "row--editing" : "row--clickable"}
               onClick={() => setEditing(editing === item.instance ? null : item.instance)}
             >
-              <td>{kind === "cartridge" ? item.set : item.shape}</td>
+              <td className="shape-cell">
+                {kind === "cartridge" ? (
+                  item.set
+                ) : (
+                  <>
+                    <ShapeIcon shape={item.shape} title={item.shape ?? undefined} />
+                    <span className="dim">{item.set}</span>
+                  </>
+                )}
+              </td>
               {kind === "module" && <td>{item.cells === 2 ? "II" : item.cells === 3 ? "III" : "IV"}</td>}
               {/* Level is not a filter on purpose: substats are identical at +0
                   and +20, so an unlevelled item is a valid recommendation. */}
               <td>+{item.level}</td>
               <td>
-                {item.mainStats.map((stat) => stat.stat).join(", ") || <span className="dim">—</span>}
+                {item.mainStats.length === 0 ? (
+                  <span className="dim">—</span>
+                ) : (
+                  item.mainStats.map((stat, index) => (
+                    <span key={stat.stat}>
+                      {index > 0 && ", "}
+                      <StatName gamedata={gamedata} id={stat.stat} />
+                      {stat.value !== null && ` ${statText.value(stat.stat, stat.value)}`}
+                    </span>
+                  ))
+                )}
               </td>
               <td className="subs">
-                {item.substats.map((stat) => `${stat.stat} ${stat.value}`).join("  ·  ")}
+                {item.substats.map((stat, index) => (
+                  <span key={stat.stat}>
+                    {index > 0 && "  ·  "}
+                    <StatName gamedata={gamedata} id={stat.stat} />{" "}
+                    {statText.value(stat.stat, stat.value)}
+                  </span>
+                ))}
               </td>
-              <td>{ownerOf(item.instance) ?? <span className="dim">—</span>}</td>
+              <td>
+                <OwnerCell owner={ownerOf(item.instance)} />
+              </td>
             </tr>
           ))}
           {editing && rows.some((item) => item.instance === editing) && (
@@ -163,6 +202,17 @@ export function ItemTable({ kind, items, ownerOf }: ItemTableProps) {
         </tbody>
       </table>
     </section>
+  );
+}
+
+/** Who wears it - and, when nobody has said, where to go and say so. */
+function OwnerCell({ owner }: { owner: Owner | null }) {
+  if (!owner) return <span className="dim">—</span>;
+  if (owner.named) return <span>{owner.label}</span>;
+  return (
+    <a className="unnamed" href="#/characters" title={owner.title}>
+      {owner.label}
+    </a>
   );
 }
 

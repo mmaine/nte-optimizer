@@ -19,6 +19,27 @@ export function iconFile(key: string): string | null {
   return FILES[key] ?? null;
 }
 
+/**
+ * Full card art, as a character view's banner.
+ *
+ * Lazy and silent on failure: it is decoration, and a missing portrait must not
+ * leave a broken-image box above the build the player came for.
+ */
+export function Portrait({ entry, alt }: { entry: string; alt: string }) {
+  const [broken, setBroken] = useState(false);
+  const file = iconFile(entry);
+  if (!file || broken) return null;
+  return (
+    <img
+      className="portrait"
+      src={`./img/${file}`}
+      alt={alt}
+      loading="lazy"
+      onError={() => setBroken(true)}
+    />
+  );
+}
+
 export function Icon({
   entry,
   alt,

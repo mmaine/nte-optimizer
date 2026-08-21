@@ -39,7 +39,14 @@ function download(name: string, contents: string): void {
   URL.revokeObjectURL(url);
 }
 
-export function DataPanel({ gamedataVersion }: { gamedataVersion: string | null }) {
+export function DataPanel({
+  gamedataVersion,
+  todo,
+}: {
+  gamedataVersion: string | null;
+  /** Equipped-in-app rows the player still has to apply in game. */
+  todo: Map<string, unknown[]>;
+}) {
   const store = useStore();
   const state = useAppState();
   const [pending, setPending] = useState<ImportResult | null>(null);
@@ -65,9 +72,50 @@ export function DataPanel({ gamedataVersion }: { gamedataVersion: string | null 
     setNote("Gear imported.");
   };
 
+  const db = state.data.db;
+  const equipped = new Set(db.equipment.map((row) => row.instance)).size;
+
   return (
     <section className="data">
       <h2>Data</h2>
+
+      {/* The library at a glance, so "did the import actually land" is
+          answerable without opening a tab and counting rows. */}
+      <dl className="library">
+        <div>
+          <dt>Cartridges</dt>
+          <dd>{db.items.filter((item) => item.kind === "cartridge").length}</dd>
+        </div>
+        <div>
+          <dt>Modules</dt>
+          <dd>{db.items.filter((item) => item.kind === "module").length}</dd>
+        </div>
+        <div>
+          <dt>Characters</dt>
+          <dd>{db.characters.length}</dd>
+        </div>
+        <div>
+          <dt>Equipped</dt>
+          <dd>{equipped}</dd>
+        </div>
+        <div>
+          <dt>Game data</dt>
+          <dd>{gamedataVersion}</dd>
+        </div>
+      </dl>
+
+      {todo.size > 0 && (
+        <details className="todo" open>
+          <summary>
+            To do in game ({[...todo.values()].flat().length} pieces)
+          </summary>
+          {[...todo].map(([character, rows]) => (
+            <p key={character || "unassigned"}>
+              <strong>{character || "unassigned"}</strong>: {rows.length} pieces
+            </p>
+          ))}
+        </details>
+      )}
 
       <div className="actions">
         <button onClick={() => gearInput.current?.click()}>Import gear capture</button>

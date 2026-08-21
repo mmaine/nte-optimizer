@@ -7,7 +7,7 @@
  */
 import { useEffect, useState } from "react";
 
-export const TABS = ["cartridges", "modules", "characters", "team"] as const;
+export const TABS = ["cartridges", "modules", "characters", "team", "data"] as const;
 export type Tab = (typeof TABS)[number];
 
 export interface Route {

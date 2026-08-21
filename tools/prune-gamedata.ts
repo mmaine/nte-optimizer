@@ -38,7 +38,12 @@ export interface Esper {
   name: string;
   element: string | null;
   rarity: number;
+  /** Small list avatar. */
   icon: string;
+  /** 256px avatar. */
+  iconBig: string | null;
+  /** Full card art, used as the character view's header. */
+  iconGacha: string | null;
   /** Per-level curves, indexed by level - 1. */
   stats: StatCurve[];
   /** 7x7, -1 blocked and 0 free. */
@@ -82,6 +87,8 @@ const espers: Esper[] = espersRaw.map((esper) => ({
   element: esper.element?.[0]?.element_id ?? null,
   rarity: esper.rarity,
   icon: esper.icon,
+  iconBig: esper.iconBig ?? null,
+  iconGacha: esper.iconGacha ?? null,
   stats: (esper.stats ?? []).map((stat: StatCurve) => ({
     id_stats: stat.id_stats,
     name: stat.name,
@@ -112,10 +119,42 @@ const arcs: Arc[] = arcEntries.map((arc: any) => ({
   values: arc.effect?.values ?? arc.effect ?? null,
 }));
 
+/**
+ * How the game itself names each stat id, harvested rather than hand-written.
+ *
+ * Every `{ id_stats, name }` pair anywhere in the mirror agrees with every
+ * other, so this is the game's own label for a stat, not a guess. Ids the
+ * mirror never names are filled in by `domain/statlabels.ts`, which says on
+ * each one where the label came from.
+ */
+function harvestStatNames(): Record<string, { name: string; percent: boolean }> {
+  const found: Record<string, { name: string; percent: boolean }> = {};
+  const walk = (node: unknown): void => {
+    if (Array.isArray(node)) {
+      for (const child of node) walk(child);
+      return;
+    }
+    if (!node || typeof node !== "object") return;
+    const record = node as Record<string, unknown>;
+    const id = record.id_stats;
+    const name = record.name;
+    if (typeof id === "string" && typeof name === "string" && name.trim()) {
+      found[id] ??= { name, percent: record.bShowPercent === true };
+    }
+    for (const child of Object.values(record)) walk(child);
+  };
+  walk(espersRaw);
+  walk(arcsRaw);
+  return found;
+}
+
+const statNames = harvestStatNames();
+
 const gamedata = {
   format: "nte-gamedata",
   format_version: 1,
   generated: new Date().toISOString().slice(0, 10),
+  statNames,
   espers,
   arcs,
   arcEffects,

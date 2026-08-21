@@ -18,10 +18,12 @@ export function CharactersTab({
   data,
   route,
   unnamedGroups,
+  groupNumbers,
 }: {
   data: LoadedData;
   route: Route;
   unnamedGroups: string[];
+  groupNumbers: Map<string, number>;
 }) {
   const state = useAppState();
   const db = state.data.db;
@@ -31,7 +33,7 @@ export function CharactersTab({
   return (
     <section>
       {unnamedGroups.length > 0 && (
-        <UnidentifiedGroups groups={unnamedGroups} data={data} />
+        <UnidentifiedGroups groups={unnamedGroups} data={data} groupNumbers={groupNumbers} />
       )}
       <div className="cards">
         {db.characters.map((character) => {
@@ -93,7 +95,15 @@ function ownerLabel(
  * characters share both their module shapes and their cartridge set - so the
  * player names them once, keyed on values that are stable across exports.
  */
-function UnidentifiedGroups({ groups, data }: { groups: string[]; data: LoadedData }) {
+function UnidentifiedGroups({
+  groups,
+  data,
+  groupNumbers,
+}: {
+  groups: string[];
+  data: LoadedData;
+  groupNumbers: Map<string, number>;
+}) {
   const store = useStore();
   const state = useAppState();
   const db = state.data.db;
@@ -112,7 +122,9 @@ function UnidentifiedGroups({ groups, data }: { groups: string[]; data: LoadedDa
           .filter((item) => item !== undefined);
         return (
           <div key={group} className="group">
-            <code>{group.slice(0, 12)}</code>
+            <strong className="group-number" title={group}>
+              Group {groupNumbers.get(group) ?? "?"}
+            </strong>
             <span className="dim">
               {items.map((item) => item.shape ?? item.set).join(", ")}
             </span>
