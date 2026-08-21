@@ -10,6 +10,7 @@ import { esperFor, type LoadedData } from "../state/gamedata.ts";
 import { CharacterView } from "./CharacterView.tsx";
 import { Icon } from "./Icon.tsx";
 import { equipmentOf } from "../db/store.ts";
+import type { CharacterRow } from "../db/schema.ts";
 import { hashFor, type Route } from "./router.ts";
 import { useAppState, useStore } from "./useStore.ts";
 
@@ -61,6 +62,31 @@ export function CharactersTab({
 }
 
 /**
+ * What to call a character in the naming dropdown.
+ *
+ * Two espers are both published as "Zero", so a bare display name can send a
+ * whole loadout to the wrong character; where a name is shared the codename
+ * disambiguates it. Seven of the captured roster have no everness record at
+ * all, so their codename is all there is - which is also why the options come
+ * from the capture rather than from the esper list: a character the game says
+ * you own must be nameable even when the game database has never heard of it.
+ */
+function ownerLabel(
+  data: LoadedData,
+  characters: CharacterRow[],
+  characterId: string,
+): string {
+  const esper = esperFor(data.gamedata, characterId);
+  if (!esper) return characterId;
+  const shared = characters.some(
+    (other) =>
+      other.characterId !== characterId &&
+      esperFor(data.gamedata, other.characterId)?.name === esper.name,
+  );
+  return shared ? `${esper.name} (${characterId})` : esper.name;
+}
+
+/**
  * The owner groups nobody has named.
  *
  * Seven of thirteen cannot be matched from the capture at all - three sets of
@@ -97,9 +123,9 @@ function UnidentifiedGroups({ groups, data }: { groups: string[]; data: LoadedDa
               }}
             >
               <option value="">name this group…</option>
-              {data.gamedata.espers.map((esper) => (
-                <option key={esper.abilityKey} value={esper.abilityKey}>
-                  {esper.name}
+              {db.characters.map((character) => (
+                <option key={character.characterId} value={character.characterId}>
+                  {ownerLabel(data, db.characters, character.characterId)}
                 </option>
               ))}
             </select>

@@ -351,6 +351,9 @@ export function CharacterView({
             Equip this build
           </button>
         )}
+        {state.data.undo.length > 0 && (
+          <button onClick={() => void store.undo()}>Undo last equip</button>
+        )}
       </div>
 
       {running && progress && (

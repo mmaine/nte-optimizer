@@ -223,6 +223,7 @@ function Result({
   data: LoadedData;
   store: ReturnType<typeof useStore>;
 }) {
+  const state = useAppState();
   if (result.infeasible) {
     return <p className="warning">No conflict-free team could be built from this pool.</p>;
   }
@@ -243,7 +244,9 @@ function Result({
       </div>
       <p className="dim">
         Equipping writes an “app” row you still have to apply in game.{" "}
-        <button onClick={() => void store.undo()}>Undo last equip</button>
+        {state.data.undo.length > 0 && (
+          <button onClick={() => void store.undo()}>Undo last equip</button>
+        )}
       </p>
     </div>
   );
