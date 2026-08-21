@@ -1,16 +1,16 @@
 /**
  * Validates `data-src/guides.json`.
  *
- * There is deliberately **no scraper**. Prydwen's character pages are
- * client-rendered, so a plain fetch returns navigation chrome, and their Gatsby
- * data endpoint answers `410 Gone`. Their robots.txt does allow content pages
- * with a ten second crawl-delay, so a headless render would be within policy -
- * but it is not something an unattended build step should be doing, and the plan
- * always called for this file to be human-reviewed and committed.
+ * There is deliberately **no scraper**. Prydwen sits behind a Cloudflare bot
+ * challenge, and their Gatsby data endpoint answers `410 Gone`. Their
+ * robots.txt does allow content pages with a ten second crawl-delay, so reading
+ * them is within policy - but through an attended browser session, never as an
+ * unattended build step, and the plan always called for this file to be
+ * human-reviewed and committed.
  *
- * So the tool checks what a person typed instead: that every stat id has a slot,
- * that targets look like the units the model expects, and that keys join to real
- * characters.
+ * So the tool checks the committed file instead: that every stat id has a slot,
+ * that targets look like the units the model expects, that keys join to real
+ * characters, and that a recommended set is one the game actually has.
  *
  *   node --experimental-strip-types tools/check-guides.ts
  */
@@ -29,6 +29,8 @@ const gamedata = JSON.parse(readFileSync(join(root, "src/generated/gamedata.json
 const keys = new Set<string>(
   gamedata.espers.map((esper: { abilityKey: string }) => esper.abilityKey),
 );
+const setBonuses = JSON.parse(readFileSync(join(root, "data-src/set-bonuses.json"), "utf8"));
+const setNames = new Set<string>(Object.keys(setBonuses.sets));
 
 const problems: string[] = [];
 
@@ -42,6 +44,14 @@ for (const guide of guides.characters ?? []) {
     problems.push(`${where}: not an ability key in gamedata (typo, or a codename with no record)`);
   }
   if (!guide.variants?.length) problems.push(`${where}: no variants`);
+
+  // A recommended set has to be one of the twelve, or the name is a typo and
+  // would never join to `set-bonuses.json`.
+  for (const set of guide.sets ?? []) {
+    if (!setNames.has(set.name)) problems.push(`${where}: not a cartridge set: ${set.name}`);
+  }
+  const ranks = (guide.sets ?? []).map((set) => set.rank);
+  if (new Set(ranks).size !== ranks.length) problems.push(`${where}: duplicate set rank`);
 
   for (const variant of guide.variants ?? []) {
     const scope = `${where}/${variant.name}`;

@@ -1,23 +1,18 @@
-/**
- * Cartridge set bonuses.
- *
- * The bonus *values* are the one piece of the model no available source
- * carries: the capture never sends them, and everness's `items.json` holds only
- * the cartridge boxes, not their effects. They have to be read in game or
- * scraped from a guide.
- *
- * Until then every tier is explicitly unknown and contributes **nothing**. The
- * requirements are firm that the app never invents numbers, so a missing bonus
- * shows as a gap in the UI rather than as a plausible-looking zero the player
- * cannot tell apart from a real one.
- */
+/** Cartridge set bonuses, classified with the same modes as Arc effects. */
 import { activeTiers, type SetName, type Tier } from "./cartridges.ts";
 import type { ShapeId } from "./shapes.ts";
-import { vectorFrom, type StatPair } from "./statvec.ts";
+import { vectorFrom, type StatId, type StatPair } from "./statvec.ts";
+
+export type BonusMode = "always" | "toggle" | "stacks" | "duration" | "unmodellable";
 
 export interface TierBonus {
-  unknown: boolean;
-  stats: StatPair[];
+  description: string;
+  mode: BonusMode;
+  stats: Array<{ stat: StatId; value: number }>;
+  why: string;
+  max_stacks?: number;
+  /** Kept for future source gaps; v2 classifies every current tier. */
+  unknown?: boolean;
 }
 
 export interface SetBonusTable {
@@ -26,11 +21,17 @@ export interface SetBonusTable {
   sets: Record<string, Record<"2" | "4", TierBonus>>;
 }
 
+export interface OmittedTier {
+  tier: Tier;
+  mode: "duration" | "unmodellable";
+  why: string;
+}
+
 export interface SetBonusResult {
   tiers: Tier[];
   vector: Float32Array;
-  /** Tiers that are active but whose values nobody has measured yet. */
   unknownTiers: Tier[];
+  omittedTiers: OmittedTier[];
 }
 
 /** What a board's set bonuses contribute, and what is missing from that answer. */
@@ -38,29 +39,41 @@ export function setBonus(
   table: SetBonusTable,
   set: SetName,
   shapesOnBoard: readonly ShapeId[],
+  targetTier: Tier = 4,
 ): SetBonusResult {
   const tiers = activeTiers(set, shapesOnBoard);
   const entry = table.sets[set];
   const pairs: StatPair[] = [];
   const unknownTiers: Tier[] = [];
+  const omittedTiers: OmittedTier[] = [];
 
   for (const tier of tiers) {
+    if (tier > targetTier) continue;
     const bonus = entry?.[String(tier) as "2" | "4"];
     if (!bonus || bonus.unknown) {
       unknownTiers.push(tier);
       continue;
     }
-    pairs.push(...bonus.stats);
+    if (bonus.mode === "duration" || bonus.mode === "unmodellable") {
+      omittedTiers.push({ tier, mode: bonus.mode, why: bonus.why });
+      continue;
+    }
+
+    // ponytail: selecting 2+4 means aiming for stated max stacks; add a stack control only if users need partial uptime.
+    const multiplier = bonus.mode === "stacks" ? bonus.max_stacks ?? 0 : 1;
+    pairs.push(...bonus.stats.map(({ stat, value }) => ({ stat, value: value * multiplier })));
   }
 
-  return { tiers, vector: vectorFrom(pairs), unknownTiers };
+  return { tiers, vector: vectorFrom(pairs), unknownTiers, omittedTiers };
 }
 
 /** Sets with at least one unmeasured tier, for the UI to flag up front. */
 export function incompleteSets(table: SetBonusTable): SetName[] {
   const out: SetName[] = [];
   for (const [set, tiers] of Object.entries(table.sets)) {
-    if (tiers["2"].unknown || tiers["4"].unknown) out.push(set as SetName);
+    if (!tiers["2"] || !tiers["4"] || tiers["2"].unknown || tiers["4"].unknown) {
+      out.push(set as SetName);
+    }
   }
   return out.sort();
 }

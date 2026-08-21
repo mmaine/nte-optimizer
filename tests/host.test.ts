@@ -101,6 +101,22 @@ describe("runJob", () => {
     expect(progress.some((p) => p.phase === "team")).toBe(true);
   });
 
+  it("carries selected set tiers through the job boundary", () => {
+    const twoPiece = job(["Zankou"]);
+    twoPiece.characters[0]!.targetTier = 2;
+    const runTwo = runJob(twoPiece);
+    let step = runTwo.next();
+    while (!step.done) step = runTwo.next();
+    expect(step.value.assignment[0]!.build.omittedTiers).toEqual([]);
+
+    const full = job(["Zankou"]);
+    full.characters[0]!.targetTier = 4;
+    const runFull = runJob(full);
+    let next = runFull.next();
+    while (!next.done) next = runFull.next();
+    expect(next.value.assignment[0]!.build.omittedTiers[0]).toMatchObject({ tier: 4, mode: "duration" });
+  });
+
   it("gives two characters disjoint items", () => {
     const run = runJob(job(["Zankou", "Haniel"]));
     let step = run.next();

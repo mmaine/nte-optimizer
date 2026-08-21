@@ -5,6 +5,7 @@ import { boardFromSlots, fillers, placements, tile } from "../src/domain/board.t
 import { REQUIRED_PIECES, SET_IDS, SET_NAMES, activeTiers } from "../src/domain/cartridges.ts";
 import { incompleteSets, setBonus, type SetBonusTable } from "../src/domain/setbonus.ts";
 import { ICON_ORDER, SHAPES, renderShape, sizeOf } from "../src/domain/shapes.ts";
+import { slotOf } from "../src/domain/statvec.ts";
 import { pieceColour, renderBoard } from "../src/domain/render.ts";
 import { cellsOfPiece, loadTilings, multisetOf, type RawTilings } from "../src/domain/tilings.ts";
 
@@ -182,22 +183,47 @@ describe("set bonuses", () => {
     expect(Object.keys(SET_IDS)).toHaveLength(12);
   });
 
-  it("contributes nothing rather than a guess while values are unmeasured", () => {
+  it("classifies every tier and preserves the three honest model gaps", () => {
+    expect(table.format_version).toBe(2);
+    expect(Object.values(table.sets).flatMap((tiers) => Object.values(tiers))).toHaveLength(24);
+    expect(
+      Object.entries(table.sets)
+        .filter(([, tiers]) => tiers["4"].mode === "unmodellable")
+        .map(([set]) => set)
+        .sort(),
+    ).toEqual(["Diabolos", "Kingdom's Guard", "Speedy Hedgehog"]);
+    expect(incompleteSets(table)).toEqual([]);
+  });
+
+  it("uses the user-decided Mental DMG mapping", () => {
+    expect(table.sets["Quiet Manor"]!["2"].stats).toEqual([
+      { stat: "DamageUpPsychicallyBase", value: 0.1 },
+    ]);
+    expect(table.sets["Quiet Manor"]!["2"].why).toContain("circumstantial");
+  });
+
+  it("scores only selected tiers and reports timed tiers it omits", () => {
     const required = REQUIRED_PIECES["Shadow Creed"];
-    const result = setBonus(table, "Shadow Creed", required);
-    expect(result.tiers).toEqual([2, 4]);
-    expect(result.unknownTiers).toEqual([2, 4]);
-    expect([...result.vector].every((value) => value === 0)).toBe(true);
+    const twoPiece = setBonus(table, "Shadow Creed", required, 2);
+    expect(twoPiece.vector[slotOf("AtkUp")]).toBeCloseTo(0.1);
+    expect(twoPiece.omittedTiers).toEqual([]);
+
+    const full = setBonus(table, "Shadow Creed", required, 4);
+    expect(full.vector[slotOf("AtkUp")]).toBeCloseTo(0.1);
+    expect(full.omittedTiers).toEqual([
+      { tier: 4, mode: "duration", why: table.sets["Shadow Creed"]!["4"].why },
+    ]);
   });
 
-  it("reports no active tier when the board misses the shapes", () => {
-    const result = setBonus(table, "Shadow Creed", ["cell3_style1"]);
-    expect(result.tiers).toEqual([]);
-    expect(result.unknownTiers).toEqual([]);
-  });
-
-  it("flags every set as incomplete until the values are filled in", () => {
-    expect(incompleteSets(table)).toHaveLength(12);
+  it("uses stated maximum stacks when aiming for 2+4", () => {
+    const result = setBonus(
+      table,
+      "Crimson: Twin Butterflies",
+      REQUIRED_PIECES["Crimson: Twin Butterflies"],
+      4,
+    );
+    expect(result.vector[slotOf("DamageUpIncantationBase")]).toBeCloseTo(0.1);
+    expect(result.vector[slotOf("AtkUp")]).toBeCloseTo(0.36);
   });
 });
 

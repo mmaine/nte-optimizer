@@ -9,6 +9,7 @@ import {
   weightForRank,
   type GuideTable,
 } from "../src/domain/guides.ts";
+import { isKnownStat } from "../src/domain/statvec.ts";
 
 const table = JSON.parse(readFileSync("data-src/guides.json", "utf8")) as GuideTable;
 
@@ -74,7 +75,12 @@ describe("guide to targets", () => {
 
 describe("guide lookup", () => {
   it("returns null for a character with no published guide", () => {
-    expect(guideFor(table, "Zankou")).toBeNull();
+    // Linko (`Radio072`) has a Prydwen page, but its Build tab still says the
+    // stats "aren't available yet", so the character is deliberately absent
+    // rather than filled in with something a player could not tell apart from
+    // real guidance.
+    expect(guideFor(table, "Radio072")).toBeNull();
+    expect(guideFor(table, "NotACharacter")).toBeNull();
     expect(variantFor(null, null)).toBeNull();
   });
 
@@ -91,10 +97,45 @@ describe("guide lookup", () => {
     expect(variantFor(guide, null)!.name).toBe("Main DPS");
   });
 
-  it("ships an empty table rather than invented guidance", () => {
-    // Prydwen's data could not be obtained; a plausible-looking guess would be
-    // worse than none, because the player could not tell it apart from real.
-    expect(table.characters).toEqual([]);
+  it("carries the published guides, and only stats the model has slots for", () => {
     expect(table.format).toBe("nte-guides");
+    expect(table.characters.length).toBeGreaterThan(0);
+
+    for (const guide of table.characters) {
+      expect(guide.variants.length).toBeGreaterThan(0);
+      for (const entry of guide.variants) {
+        // A variant with no targets would score nothing: `targetsFromGuide`
+        // reads the ranking only to weight the targets it already has.
+        expect(entry.targets.length).toBeGreaterThan(0);
+        expect(entry.priority.length).toBeGreaterThan(0);
+        expect(new Set(entry.priority).size).toBe(entry.priority.length);
+
+        for (const stat of entry.priority) expect(isKnownStat(stat)).toBe(true);
+        for (const target of entry.targets) {
+          expect(isKnownStat(target.stat)).toBe(true);
+          expect(target.target).toBeGreaterThan(0);
+          // Percentages are fractions here, never "70".
+          if (target.stat.startsWith("DamageUp") || target.stat.endsWith("Up")) {
+            expect(target.target).toBeLessThanOrEqual(5);
+          }
+        }
+      }
+    }
+  });
+
+  it("weights a real entry by its published ranking", () => {
+    const guide = guideFor(table, "Zankou")!;
+    expect(guide).not.toBeNull();
+    // Prydwen ranks Crimson: Twin Butterflies first for Zankou.
+    expect(guide.sets?.[0]?.name).toBe("Crimson: Twin Butterflies");
+
+    const targets = targetsFromGuide(guide.variants[0]!);
+    const byStat = new Map(targets.map((entry) => [entry.stat, entry]));
+    // Their substat ranking opens "Crit DMG % > Cycle Intensity = Crit Rate %".
+    expect(byStat.get("CritDamageBase")!.weight).toBe(TOP_WEIGHT);
+    expect(byStat.get("CritDamageBase")!.weight).toBeGreaterThan(
+      byStat.get("MagBase")!.weight,
+    );
+    expect(byStat.get("MagBase")!.weight).toBeGreaterThan(byStat.get("CritBase")!.weight);
   });
 });

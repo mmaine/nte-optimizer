@@ -29,6 +29,7 @@
  * for free.
  */
 import type { ConsoleTrait } from "../domain/stats.ts";
+import type { Tier } from "../domain/cartridges.ts";
 import type { ItemPool } from "../domain/items.ts";
 import type { SetBonusTable } from "../domain/setbonus.ts";
 import type { Tiling } from "../domain/tilings.ts";
@@ -46,6 +47,7 @@ export interface SingleRequest {
   base: Float32Array;
   trait: ConsoleTrait | null;
   setBonuses: SetBonusTable;
+  targetTier?: Tier;
   scoring: CompiledScoring;
   /** Pool indices held by other characters and therefore off limits. */
   excluded?: ReadonlySet<number>;
@@ -151,6 +153,7 @@ export function* solveSingle(
     base,
     trait,
     setBonuses,
+    targetTier = 4,
     scoring,
     excluded = new Set<number>(),
     beamWidth = DEFAULT_BEAM_WIDTH,
@@ -201,7 +204,7 @@ export function* solveSingle(
     fixed.set(base);
     const traitStat = traitContribution(trait, tiling.pieces);
     if (traitStat) vectorFrom([traitStat], fixed);
-    const bonus = setBonus(setBonuses, tiling.set, tiling.pieces);
+    const bonus = setBonus(setBonuses, tiling.set, tiling.pieces, targetTier);
     for (let i = 0; i < SLOT_COUNT; i += 1) fixed[i] = fixed[i]! + bonus.vector[i]!;
 
     // Hardest groups first: fewer choices near the root prunes the most.
@@ -270,6 +273,7 @@ export function* solveSingle(
           vector,
           proven: false,
           unknownTiers: bonus.unknownTiers,
+          omittedTiers: bonus.omittedTiers,
         };
       }
       if (bestForState === null) continue;

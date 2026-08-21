@@ -306,6 +306,11 @@ function AssignedBuild({
           contributes nothing to this score.
         </p>
       )}
+      {build.omittedTiers.length > 0 && (
+        <p className="warning">
+          Not modelled: {build.omittedTiers.map((tier) => `tier ${tier.tier}: ${tier.why}`).join("; ")}
+        </p>
+      )}
 
       <BuildLegend
         cells={build.tiling.cells}

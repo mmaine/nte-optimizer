@@ -15,6 +15,7 @@ import { useMemo, useRef, useState } from "react";
 
 import { arcContribution, arcControls, MAX_ARC_LEVEL, MAX_REFINEMENT } from "../domain/arcs.ts";
 import { boardFromSlots } from "../domain/board.ts";
+import { SET_NAMES, type SetName, type Tier } from "../domain/cartridges.ts";
 import { compile, explain, type StatTarget } from "../domain/scoring.ts";
 import { guideFor, targetsFromGuide, variantFor } from "../domain/guides.ts";
 import { compareSheet, predictSheet } from "../domain/sheet.ts";
@@ -89,6 +90,11 @@ export function CharacterView({
   // R2. Off by default: taking gear off another character is a real cost, so it
   // is opted into rather than assumed.
   const [useEquipped, setUseEquipped] = useState(false);
+  const [setName, setSetName] = useState<SetName | "">(() => {
+    const recommended = guide?.sets?.[0]?.name;
+    return recommended && recommended in data.setBonuses.sets ? (recommended as SetName) : "";
+  });
+  const [targetTier, setTargetTier] = useState<Tier>(2);
   const handle = useRef<SolveHandle | null>(null);
 
   const worn = equipmentOf(db, characterId);
@@ -154,6 +160,8 @@ export function CharacterView({
           trait,
           base: arcResult ? Array.from(arcResult.vector) : new Array(SLOT_COUNT).fill(0),
           scoring: { targets },
+          ...(setName ? { sets: [setName] } : {}),
+          targetTier,
           excludedInstances: useEquipped ? [] : heldByOthers(db, [characterId]),
         },
       ],
@@ -318,6 +326,33 @@ export function CharacterView({
         <ReadOnlyTargets targets={targets} source={guide!.source} updated={guide!.updated} />
       )}
 
+      <div className="arc-row">
+        <label className="arc">
+          Cartridge set
+          <select
+            value={setName}
+            disabled={running}
+            onChange={(event) => setSetName(event.target.value as SetName | "")}
+          >
+            <option value="">Any owned set</option>
+            {SET_NAMES.map((name) => (
+              <option key={name} value={name}>{name}</option>
+            ))}
+          </select>
+        </label>
+        <label className="arc">
+          Set bonuses to aim for
+          <select
+            value={targetTier}
+            disabled={running}
+            onChange={(event) => setTargetTier(Number(event.target.value) as Tier)}
+          >
+            <option value={2}>2-piece only</option>
+            <option value={4}>2-piece + 4-piece</option>
+          </select>
+        </label>
+      </div>
+
       <label className="toggle">
         <input
           type="checkbox"
@@ -399,6 +434,11 @@ export function CharacterView({
             <p className="warning">
               Set bonus tier {build.unknownTiers.join(" and ")} is active but its values have
               never been measured, so it contributes nothing to this score.
+            </p>
+          )}
+          {build.omittedTiers.length > 0 && (
+            <p className="warning">
+              Not modelled: {build.omittedTiers.map((entry) => `tier ${entry.tier}: ${entry.why}`).join("; ")}
             </p>
           )}
           {report && (

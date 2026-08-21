@@ -8,12 +8,17 @@ import type { Tiling } from "../src/domain/tilings.ts";
 import { solveSingle } from "../src/solver/single.ts";
 import type { SolveProgress, SolveResult } from "../src/solver/protocol.ts";
 
+const unknown = {
+  description: "unmeasured",
+  mode: "always",
+  stats: [],
+  why: "test fixture",
+  unknown: true,
+} as const;
 const bonuses: SetBonusTable = {
   format: "nte-set-bonuses",
-  format_version: 1,
-  sets: {
-    "Shadow Creed": { "2": { unknown: true, stats: [] }, "4": { unknown: true, stats: [] } },
-  },
+  format_version: 2,
+  sets: { "Shadow Creed": { "2": unknown, "4": unknown } },
 };
 
 const scoring = compile({

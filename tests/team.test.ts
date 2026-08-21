@@ -19,6 +19,7 @@ function build(score: number, cartridge: number, modules: number[]): Build {
     vector: new Float32Array(0),
     proven: true,
     unknownTiers: [],
+    omittedTiers: [],
   };
 }
 

@@ -7,7 +7,7 @@
  * host and the worker host run byte-identical code and cannot drift.
  */
 import { boardFromSlots, boardKey } from "../domain/board.ts";
-import type { SetName } from "../domain/cartridges.ts";
+import type { SetName, Tier } from "../domain/cartridges.ts";
 import { buildPool, type ExportedItem } from "../domain/items.ts";
 import { compile, type ScoringConfig } from "../domain/scoring.ts";
 import type { SetBonusTable } from "../domain/setbonus.ts";
@@ -29,6 +29,8 @@ export interface CharacterJob {
   scoring: ScoringConfig;
   /** Restrict to these sets. Omit for every set the account owns. */
   sets?: SetName[];
+  /** Highest set-bonus tier to score: 2, or both 2 and 4. */
+  targetTier?: Tier;
   /**
    * Instances this character may not use - R2's "use equipped items" toggle
    * turned off, meaning items another character is wearing are off limits.
@@ -129,6 +131,7 @@ export function* runJob(job: SolveJob): Generator<JobProgress, JobResult, void> 
       base: baseVector(character),
       trait: character.trait,
       setBonuses: job.setBonuses,
+      targetTier: character.targetTier ?? 4,
       scoring: compile(character.scoring),
       excluded,
       beamWidth: options.beamWidth,

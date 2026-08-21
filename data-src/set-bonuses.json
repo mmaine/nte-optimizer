@@ -1,127 +1,55 @@
 {
- "format": "nte-set-bonuses",
- "format_version": 1,
- "note": "Bonus VALUES are not in any capture and not on everness: items.json carries only the cartridge boxes. Each tier stays unknown until read in game or scraped, and an unknown tier contributes nothing rather than a guessed number.",
- "sets": {
-  "Crimson: Twin Butterflies": {
-   "2": {
-    "unknown": true,
-    "stats": []
-   },
-   "4": {
-    "unknown": true,
-    "stats": []
-   }
-  },
-  "Devil's Blood: Curse": {
-   "2": {
-    "unknown": true,
-    "stats": []
-   },
-   "4": {
-    "unknown": true,
-    "stats": []
-   }
-  },
-  "Diabolos": {
-   "2": {
-    "unknown": true,
-    "stats": []
-   },
-   "4": {
-    "unknown": true,
-    "stats": []
-   }
-  },
-  "Fireflies and the Forest": {
-   "2": {
-    "unknown": true,
-    "stats": []
-   },
-   "4": {
-    "unknown": true,
-    "stats": []
-   }
-  },
-  "Kingdom's Guard": {
-   "2": {
-    "unknown": true,
-    "stats": []
-   },
-   "4": {
-    "unknown": true,
-    "stats": []
-   }
-  },
-  "Lost Radiance": {
-   "2": {
-    "unknown": true,
-    "stats": []
-   },
-   "4": {
-    "unknown": true,
-    "stats": []
-   }
-  },
-  "Quiet Manor": {
-   "2": {
-    "unknown": true,
-    "stats": []
-   },
-   "4": {
-    "unknown": true,
-    "stats": []
-   }
-  },
-  "Shadow Creed": {
-   "2": {
-    "unknown": true,
-    "stats": []
-   },
-   "4": {
-    "unknown": true,
-    "stats": []
-   }
-  },
-  "Speedy Hedgehog": {
-   "2": {
-    "unknown": true,
-    "stats": []
-   },
-   "4": {
-    "unknown": true,
-    "stats": []
-   }
-  },
-  "Street Boxer": {
-   "2": {
-    "unknown": true,
-    "stats": []
-   },
-   "4": {
-    "unknown": true,
-    "stats": []
-   }
-  },
-  "Thea's Night Tavern": {
-   "2": {
-    "unknown": true,
-    "stats": []
-   },
-   "4": {
-    "unknown": true,
-    "stats": []
-   }
-  },
-  "Tiny Big Adventure": {
-   "2": {
-    "unknown": true,
-    "stats": []
-   },
-   "4": {
-    "unknown": true,
-    "stats": []
-   }
+  "format": "nte-set-bonuses",
+  "format_version": 2,
+  "source": "Prydwen, read 2026-08-21; page updated 2026-04-26",
+  "sets": {
+    "Crimson: Twin Butterflies": {
+      "2": {"description": "Incantation DMG +10%", "mode": "always", "stats": [{"stat": "DamageUpIncantationBase", "value": 0.1}], "why": "Unconditional wearer stat."},
+      "4": {"description": "ATK +6% per nearby team Incantation DMG trigger, up to 6 stacks; each lasts 10s.", "mode": "stacks", "max_stacks": 6, "stats": [{"stat": "AtkUp", "value": 0.06}], "why": "Wearer ATK stacks to 6 and remains active off-field."}
+    },
+    "Devil's Blood: Curse": {
+      "2": {"description": "Psyche DMG +10%", "mode": "always", "stats": [{"stat": "DamageUpPsycheBase", "value": 0.1}], "why": "Unconditional wearer stat."},
+      "4": {"description": "DMG +18%, increased to 36% against units affected by Nova or Stain.", "mode": "always", "stats": [{"stat": "DamageUpGeneralBase", "value": 0.18}], "why": "The unconditional 18% is modelled; the target-conditional increase is not assumed."}
+    },
+    "Diabolos": {
+      "2": {"description": "Chaos DMG +10%", "mode": "always", "stats": [{"stat": "DamageUpChaosBase", "value": 0.1}], "why": "Unconditional wearer stat."},
+      "4": {"description": "Ignores 12% Chaos RES, increased to 24% for 20s after Nova or Scorch.", "mode": "unmodellable", "stats": [], "why": "Chaos RES is not DEF; mapping this to DefIgnore would model a different quantity."}
+    },
+    "Fireflies and the Forest": {
+      "2": {"description": "Anima DMG +10%", "mode": "always", "stats": [{"stat": "DamageUpNatureBase", "value": 0.1}], "why": "Anima is named Nature in the stat ids."},
+      "4": {"description": "CRIT DMG +8% per nearby team Anima DMG trigger, up to 7 stacks; each lasts 10s.", "mode": "stacks", "max_stacks": 7, "stats": [{"stat": "CritDamageBase", "value": 0.08}], "why": "Wearer CRIT DMG stacks to 7 and remains active off-field."}
+    },
+    "Kingdom's Guard": {
+      "2": {"description": "DEF +15%", "mode": "always", "stats": [{"stat": "DefUp", "value": 0.15}], "why": "Unconditional wearer stat."},
+      "4": {"description": "Shields +20%", "mode": "unmodellable", "stats": [], "why": "Shield strength has no stat-vector slot."}
+    },
+    "Lost Radiance": {
+      "2": {"description": "Cosmos DMG +10%", "mode": "always", "stats": [{"stat": "DamageUpCosmosBase", "value": 0.1}], "why": "Unconditional wearer stat."},
+      "4": {"description": "Ignores 25% DEF for 20s after Ultimate.", "mode": "duration", "stats": [{"stat": "DefIgnore", "value": 0.25}], "why": "Timed post-Ultimate stat; uptime needs rotation data, so it is reported but not scored."}
+    },
+    "Quiet Manor": {
+      "2": {"description": "Mental DMG +10%", "mode": "always", "stats": [{"stat": "DamageUpPsychicallyBase", "value": 0.1}], "why": "User-decided circumstantial mapping: DamageUpPsychicallyBase is the only non-element damage id, appears on 19 real items, and Fadia's guide pairs Mental DMG with Quiet Manor. Not sheet-confirmed; check in game."},
+      "4": {"description": "Mental DMG +12% per Basic Attack, up to 3 stacks; each lasts 6s.", "mode": "stacks", "max_stacks": 3, "stats": [{"stat": "DamageUpPsychicallyBase", "value": 0.12}], "why": "Uses the same user-decided Mental DMG mapping as the 2-piece tier; stacks to 3."}
+    },
+    "Shadow Creed": {
+      "2": {"description": "ATK +10%", "mode": "always", "stats": [{"stat": "AtkUp", "value": 0.1}], "why": "Unconditional wearer stat."},
+      "4": {"description": "ATK +25% for 20s after Skill.", "mode": "duration", "stats": [{"stat": "AtkUp", "value": 0.25}], "why": "Timed post-Skill stat; uptime needs rotation data, so it is reported but not scored."}
+    },
+    "Speedy Hedgehog": {
+      "2": {"description": "Charge Efficiency +12%", "mode": "always", "stats": [{"stat": "ChargeGetEfficiencyBase", "value": 0.12}], "why": "Unconditional wearer stat."},
+      "4": {"description": "All allies' ATK +15% for 20s after wearer uses Ultimate.", "mode": "unmodellable", "stats": [], "why": "Buff applies to allies, not the wearer being optimised."}
+    },
+    "Street Boxer": {
+      "2": {"description": "Lakshana DMG +10%", "mode": "always", "stats": [{"stat": "DamageUpLakshanaBase", "value": 0.1}], "why": "Unconditional wearer stat."},
+      "4": {"description": "CRIT Rate +14%.", "mode": "always", "stats": [{"stat": "CritBase", "value": 0.14}], "why": "Prydwen's reaction sentence repeats 14% from 14%; treated as a source typo, not a second value."}
+    },
+    "Thea's Night Tavern": {
+      "2": {"description": "HP +10%", "mode": "always", "stats": [{"stat": "HPMaxUp", "value": 0.1}], "why": "Unconditional wearer stat."},
+      "4": {"description": "Healing Bonus +20%", "mode": "always", "stats": [{"stat": "HealUp", "value": 0.2}], "why": "Unconditional wearer stat."}
+    },
+    "Tiny Big Adventure": {
+      "2": {"description": "HP +10%", "mode": "always", "stats": [{"stat": "HPMaxUp", "value": 0.1}], "why": "Unconditional wearer stat."},
+      "4": {"description": "Max HP +4% when taking damage, up to 10 stacks; each lasts 10s; Ultimate grants 10.", "mode": "stacks", "max_stacks": 10, "stats": [{"stat": "HPMaxUp", "value": 0.04}], "why": "Wearer Max HP stacks to 10; targeting the 4-piece tier uses its stated maximum."}
+    }
   }
- }
 }

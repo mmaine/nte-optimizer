@@ -33,8 +33,10 @@ export interface Build {
    * The UI must render the distinction rather than implying certainty.
    */
   proven: boolean;
-  /** Active set tiers whose values nobody has measured yet. */
+  /** Selected active set tiers still lacking source data. */
   unknownTiers: Tier[];
+  /** Selected tiers that were classified but cannot be scored honestly. */
+  omittedTiers: Array<{ tier: Tier; mode: "duration" | "unmodellable"; why: string }>;
 }
 
 export interface SolveResult {

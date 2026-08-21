@@ -1,13 +1,1197 @@
 {
  "format": "nte-guides",
  "format_version": 1,
- "_source": "Prydwen build guides, entered by hand and reviewed before committing.",
- "_why_not_scraped": "Prydwen's character pages are client-rendered, so a plain fetch returns only navigation chrome, and their Gatsby /page-data/ endpoint answers 410 Gone. Their robots.txt does allow content pages with a 10 second crawl-delay, so a headless render would be permitted - it is just not something the build can do unattended. Entries below are typed in from the published guide.",
+ "_source": "https://www.prydwen.gg/neverness-to-everness/characters/<slug> - the Build tab, read on 2026-08-21 through a real browser session at their stated Crawl-delay of 10s.",
+ "_priority_is_substats": "`priority` is Prydwen's Sub Stats ranking, which is what the field documents. Their separate Main Stats ranking is not merged in: combining two published rankings into one would be our construction, not theirs. A main-stat-only priority (usually the elemental DMG bonus) therefore keeps its published target but sits at weight 1.",
+ "_ties": "Prydwen writes ties as `A = B` and emphasis as `>>`. Both are flattened to a plain ordering that keeps the printed left-to-right order, because the schema forbids duplicate ranks.",
+ "_targets_omit_totals": "Prydwen's `HP:`, `ATK:` and `DEF:` endgame lines are character TOTALS. The vector the solver scores is gear + Arc only and carries no character base stats, so those three are not comparable and are left out rather than mapped to the flat gear slots, which would be a units error. Every other published line has a zero or negligible base component and is carried through as published. Note Crit DMG still includes the character's ~50% base, so that target is conservative rather than exact.",
+ "_ranges": "Where a range or a conditional was published (`50% ~ 80%+`, `64-74%+`, `100%+ before 80% from Arc buff`) the lower bound is used, since a target is a floor to reach.",
+ "_absent": "A character with no published build data is absent, not guessed: linko.",
  "_shape": {
   "key": "the GA_<key>_* ability key, so it joins to a capture directly",
-  "variants": "one per published priority set (Main DPS, SubDPS, Break, DoT)",
+  "sets": "Prydwen's ranked cartridge set recommendation. Recorded as published; the solver still enumerates every owned set itself.",
+  "variants": "one per published priority set",
   "targets": "recommended endgame stats, raw stat ids, percentages as fractions",
-  "priority": "substat ranking, best first; weights are derived from position"
+  "priority": "substat ranking, best first; weights are derived from position",
+  "updated": "the date this entry was read from Prydwen, not their revision date"
  },
- "characters": []
+ "characters": [
+  {
+   "key": "Adler",
+   "source": "https://www.prydwen.gg/neverness-to-everness/characters/adler",
+   "updated": "2026-08-21",
+   "sets": [
+    {
+     "rank": 1,
+     "name": "Kingdom's Guard"
+    },
+    {
+     "rank": 2,
+     "name": "Speedy Hedgehog"
+    }
+   ],
+   "variants": [
+    {
+     "name": "Recommended",
+     "targets": [
+      {
+       "stat": "CritBase",
+       "target": 0.05
+      },
+      {
+       "stat": "CritDamageBase",
+       "target": 0.5
+      },
+      {
+       "stat": "MagBase",
+       "target": 50.0
+      },
+      {
+       "stat": "UnbalIntensityBase",
+       "target": 75.0
+      }
+     ],
+     "priority": [
+      "DefUp",
+      "DefAdd",
+      "UnbalIntensityBase",
+      "MagBase",
+      "DamageUpGeneralBase"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "Mitsuki",
+   "source": "https://www.prydwen.gg/neverness-to-everness/characters/aurelia",
+   "updated": "2026-08-21",
+   "sets": [
+    {
+     "rank": 1,
+     "name": "Devil's Blood: Curse"
+    },
+    {
+     "rank": 2,
+     "name": "Lost Radiance"
+    },
+    {
+     "rank": 3,
+     "name": "Shadow Creed"
+    }
+   ],
+   "variants": [
+    {
+     "name": "Recommended",
+     "targets": [
+      {
+       "stat": "CritBase",
+       "target": 0.6
+      },
+      {
+       "stat": "CritDamageBase",
+       "target": 0.9
+      },
+      {
+       "stat": "DamageUpGeneralBase",
+       "target": 0.15
+      },
+      {
+       "stat": "DamageUpPsycheBase",
+       "target": 0.3
+      }
+     ],
+     "priority": [
+      "CritDamageBase",
+      "CritBase",
+      "AtkUp",
+      "DamageUpGeneralBase",
+      "AtkAdd"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "Cang",
+   "source": "https://www.prydwen.gg/neverness-to-everness/characters/baicang",
+   "updated": "2026-08-21",
+   "sets": [
+    {
+     "rank": 1,
+     "name": "Crimson: Twin Butterflies"
+    },
+    {
+     "rank": 2,
+     "name": "Shadow Creed"
+    }
+   ],
+   "variants": [
+    {
+     "name": "Recommended",
+     "targets": [
+      {
+       "stat": "CritBase",
+       "target": 0.75
+      },
+      {
+       "stat": "CritDamageBase",
+       "target": 1.0
+      },
+      {
+       "stat": "UnbalIntensityBase",
+       "target": 25.0
+      },
+      {
+       "stat": "DamageUpGeneralBase",
+       "target": 0.1
+      },
+      {
+       "stat": "DamageUpIncantationBase",
+       "target": 0.475
+      }
+     ],
+     "priority": [
+      "CritBase",
+      "CritDamageBase",
+      "AtkUp",
+      "DamageUpGeneralBase",
+      "AtkAdd",
+      "UnbalIntensityBase"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "Chaos071",
+   "source": "https://www.prydwen.gg/neverness-to-everness/characters/chaos",
+   "updated": "2026-08-21",
+   "sets": [
+    {
+     "rank": 1,
+     "name": "Street Boxer"
+    },
+    {
+     "rank": 2,
+     "name": "Shadow Creed"
+    }
+   ],
+   "variants": [
+    {
+     "name": "Recommended",
+     "targets": [
+      {
+       "stat": "CritBase",
+       "target": 0.64
+      },
+      {
+       "stat": "CritDamageBase",
+       "target": 1.6
+      },
+      {
+       "stat": "DamageUpGeneralBase",
+       "target": 0.15
+      },
+      {
+       "stat": "DamageUpLakshanaBase",
+       "target": 0.675
+      }
+     ],
+     "priority": [
+      "CritBase",
+      "CritDamageBase",
+      "DamageUpGeneralBase",
+      "AtkUp",
+      "AtkAdd"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "Chiichan073",
+   "source": "https://www.prydwen.gg/neverness-to-everness/characters/chiz",
+   "updated": "2026-08-21",
+   "sets": [
+    {
+     "rank": 1,
+     "name": "Lost Radiance"
+    },
+    {
+     "rank": 2,
+     "name": "Shadow Creed"
+    }
+   ],
+   "variants": [
+    {
+     "name": "Recommended",
+     "targets": [
+      {
+       "stat": "CritBase",
+       "target": 0.4
+      },
+      {
+       "stat": "CritDamageBase",
+       "target": 1.0
+      },
+      {
+       "stat": "DamageUpGeneralBase",
+       "target": 0.2
+      },
+      {
+       "stat": "DamageUpCosmosBase",
+       "target": 0.55
+      }
+     ],
+     "priority": [
+      "CritDamageBase",
+      "DamageUpGeneralBase",
+      "AtkUp",
+      "AtkAdd"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "Daffodill",
+   "source": "https://www.prydwen.gg/neverness-to-everness/characters/daffodil",
+   "updated": "2026-08-21",
+   "sets": [
+    {
+     "rank": 1,
+     "name": "Diabolos"
+    }
+   ],
+   "variants": [
+    {
+     "name": "Awakening 0 (No Dupes)",
+     "targets": [
+      {
+       "stat": "CritBase",
+       "target": 0.45
+      },
+      {
+       "stat": "CritDamageBase",
+       "target": 0.9
+      },
+      {
+       "stat": "DamageUpGeneralBase",
+       "target": 0.1
+      },
+      {
+       "stat": "DamageUpChaosBase",
+       "target": 0.5
+      },
+      {
+       "stat": "UnbalIntensityBase",
+       "target": 150.0
+      }
+     ],
+     "priority": [
+      "CritBase",
+      "CritDamageBase",
+      "AtkUp",
+      "DamageUpGeneralBase",
+      "AtkAdd",
+      "UnbalIntensityBase"
+     ]
+    },
+    {
+     "name": "Awakening 2+ (Using Awakening 3 and 5)",
+     "targets": [
+      {
+       "stat": "CritBase",
+       "target": 0.3
+      },
+      {
+       "stat": "CritDamageBase",
+       "target": 0.6
+      },
+      {
+       "stat": "DamageUpGeneralBase",
+       "target": 0.1
+      },
+      {
+       "stat": "DamageUpChaosBase",
+       "target": 0.4
+      },
+      {
+       "stat": "UnbalIntensityBase",
+       "target": 350.0
+      }
+     ],
+     "priority": [
+      "CritBase",
+      "CritDamageBase",
+      "AtkUp",
+      "DamageUpGeneralBase",
+      "AtkAdd",
+      "UnbalIntensityBase"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "Edgar",
+   "source": "https://www.prydwen.gg/neverness-to-everness/characters/edgar",
+   "updated": "2026-08-21",
+   "sets": [
+    {
+     "rank": 1,
+     "name": "Thea's Night Tavern"
+    },
+    {
+     "rank": 2,
+     "name": "Speedy Hedgehog"
+    }
+   ],
+   "variants": [
+    {
+     "name": "Recommended",
+     "targets": [
+      {
+       "stat": "CritBase",
+       "target": 0.05
+      },
+      {
+       "stat": "CritDamageBase",
+       "target": 0.5
+      },
+      {
+       "stat": "MagBase",
+       "target": 50.0
+      },
+      {
+       "stat": "UnbalIntensityBase",
+       "target": 50.0
+      }
+     ],
+     "priority": [
+      "HPMaxUp",
+      "HPMaxAdd",
+      "MagBase",
+      "UnbalIntensityBase"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "Fadia",
+   "source": "https://www.prydwen.gg/neverness-to-everness/characters/fadia",
+   "updated": "2026-08-21",
+   "sets": [
+    {
+     "rank": 1,
+     "name": "Tiny Big Adventure"
+    },
+    {
+     "rank": 2,
+     "name": "Quiet Manor"
+    }
+   ],
+   "variants": [
+    {
+     "name": "Recommended",
+     "targets": [
+      {
+       "stat": "CritBase",
+       "target": 0.05
+      },
+      {
+       "stat": "CritDamageBase",
+       "target": 0.5
+      },
+      {
+       "stat": "DamageUpGeneralBase",
+       "target": 0.2
+      }
+     ],
+     "priority": [
+      "HPMaxUp",
+      "HPMaxAdd",
+      "DamageUpGeneralBase",
+      "CritBase",
+      "CritDamageBase"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "Haniel",
+   "source": "https://www.prydwen.gg/neverness-to-everness/characters/haniel",
+   "updated": "2026-08-21",
+   "sets": [
+    {
+     "rank": 1,
+     "name": "Speedy Hedgehog"
+    },
+    {
+     "rank": 2,
+     "name": "Fireflies and the Forest"
+    },
+    {
+     "rank": 3,
+     "name": "Devil's Blood: Curse"
+    }
+   ],
+   "variants": [
+    {
+     "name": "Recommended",
+     "targets": [
+      {
+       "stat": "CritBase",
+       "target": 0.5
+      },
+      {
+       "stat": "CritDamageBase",
+       "target": 0.9
+      },
+      {
+       "stat": "DamageUpGeneralBase",
+       "target": 0.15
+      },
+      {
+       "stat": "DamageUpPsycheBase",
+       "target": 0.2
+      }
+     ],
+     "priority": [
+      "CritDamageBase",
+      "DamageUpGeneralBase",
+      "CritBase",
+      "AtkUp",
+      "UnbalIntensityBase",
+      "AtkAdd"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "Hathor",
+   "source": "https://www.prydwen.gg/neverness-to-everness/characters/hathor",
+   "updated": "2026-08-21",
+   "sets": [
+    {
+     "rank": 1,
+     "name": "Street Boxer"
+    },
+    {
+     "rank": 2,
+     "name": "Devil's Blood: Curse"
+    },
+    {
+     "rank": 3,
+     "name": "Fireflies and the Forest"
+    },
+    {
+     "rank": 4,
+     "name": "Shadow Creed"
+    }
+   ],
+   "variants": [
+    {
+     "name": "Recommended",
+     "targets": [
+      {
+       "stat": "CritBase",
+       "target": 0.3
+      },
+      {
+       "stat": "CritDamageBase",
+       "target": 1.2
+      },
+      {
+       "stat": "DamageUpGeneralBase",
+       "target": 0.15
+      },
+      {
+       "stat": "DamageUpLakshanaBase",
+       "target": 0.625
+      }
+     ],
+     "priority": [
+      "CritBase",
+      "CritDamageBase",
+      "DamageUpGeneralBase",
+      "AtkUp",
+      "AtkAdd"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "Jin",
+   "source": "https://www.prydwen.gg/neverness-to-everness/characters/hotori",
+   "updated": "2026-08-21",
+   "sets": [
+    {
+     "rank": 1,
+     "name": "Lost Radiance"
+    }
+   ],
+   "variants": [
+    {
+     "name": "Recommended",
+     "targets": [
+      {
+       "stat": "CritBase",
+       "target": 0.7
+      },
+      {
+       "stat": "CritDamageBase",
+       "target": 0.9
+      },
+      {
+       "stat": "DamageUpGeneralBase",
+       "target": 0.1
+      },
+      {
+       "stat": "DamageUpCosmosBase",
+       "target": 0.5
+      }
+     ],
+     "priority": [
+      "CritDamageBase",
+      "CritBase",
+      "DamageUpGeneralBase",
+      "AtkUp",
+      "AtkAdd"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "Oneiroi",
+   "source": "https://www.prydwen.gg/neverness-to-everness/characters/iroi",
+   "updated": "2026-08-21",
+   "sets": [
+    {
+     "rank": 1,
+     "name": "Speedy Hedgehog"
+    },
+    {
+     "rank": 2,
+     "name": "Fireflies and the Forest"
+    }
+   ],
+   "variants": [
+    {
+     "name": "Recommended",
+     "targets": [
+      {
+       "stat": "CritBase",
+       "target": 0.3
+      },
+      {
+       "stat": "CritDamageBase",
+       "target": 0.7
+      },
+      {
+       "stat": "DamageUpGeneralBase",
+       "target": 0.1
+      },
+      {
+       "stat": "MagBase",
+       "target": 150.0
+      }
+     ],
+     "priority": [
+      "MagBase",
+      "CritDamageBase",
+      "CritBase",
+      "DamageUpGeneralBase",
+      "AtkUp"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "Kuhara",
+   "source": "https://www.prydwen.gg/neverness-to-everness/characters/jiuyuan",
+   "updated": "2026-08-21",
+   "sets": [
+    {
+     "rank": 1,
+     "name": "Fireflies and the Forest"
+    },
+    {
+     "rank": 2,
+     "name": "Devil's Blood: Curse"
+    },
+    {
+     "rank": 3,
+     "name": "Street Boxer"
+    },
+    {
+     "rank": 4,
+     "name": "Shadow Creed"
+    }
+   ],
+   "variants": [
+    {
+     "name": "Recommended",
+     "targets": [
+      {
+       "stat": "CritBase",
+       "target": 0.8
+      },
+      {
+       "stat": "CritDamageBase",
+       "target": 1.0
+      },
+      {
+       "stat": "DamageUpGeneralBase",
+       "target": 0.1
+      },
+      {
+       "stat": "DamageUpNatureBase",
+       "target": 0.35
+      }
+     ],
+     "priority": [
+      "CritBase",
+      "CritDamageBase",
+      "AtkUp",
+      "DamageUpGeneralBase",
+      "AtkAdd"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "Lacrimosa",
+   "source": "https://www.prydwen.gg/neverness-to-everness/characters/lacrimosa",
+   "updated": "2026-08-21",
+   "sets": [
+    {
+     "rank": 1,
+     "name": "Diabolos"
+    },
+    {
+     "rank": 2,
+     "name": "Shadow Creed"
+    }
+   ],
+   "variants": [
+    {
+     "name": "Recommended",
+     "targets": [
+      {
+       "stat": "CritBase",
+       "target": 0.5
+      },
+      {
+       "stat": "CritDamageBase",
+       "target": 1.0
+      },
+      {
+       "stat": "DamageUpGeneralBase",
+       "target": 0.1
+      },
+      {
+       "stat": "DamageUpChaosBase",
+       "target": 0.5
+      }
+     ],
+     "priority": [
+      "CritDamageBase",
+      "CritBase",
+      "DamageUpGeneralBase",
+      "AtkUp",
+      "AtkAdd"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "Mint019",
+   "source": "https://www.prydwen.gg/neverness-to-everness/characters/mint",
+   "updated": "2026-08-21",
+   "sets": [
+    {
+     "rank": 1,
+     "name": "Fireflies and the Forest"
+    },
+    {
+     "rank": 2,
+     "name": "Shadow Creed"
+    }
+   ],
+   "variants": [
+    {
+     "name": "Recommended",
+     "targets": [
+      {
+       "stat": "CritBase",
+       "target": 0.6
+      },
+      {
+       "stat": "CritDamageBase",
+       "target": 1.0
+      },
+      {
+       "stat": "DamageUpGeneralBase",
+       "target": 0.1
+      },
+      {
+       "stat": "DamageUpNatureBase",
+       "target": 0.475
+      }
+     ],
+     "priority": [
+      "CritBase",
+      "CritDamageBase",
+      "AtkUp",
+      "DamageUpGeneralBase",
+      "AtkAdd"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "Nanally",
+   "source": "https://www.prydwen.gg/neverness-to-everness/characters/nanally",
+   "updated": "2026-08-21",
+   "sets": [
+    {
+     "rank": 1,
+     "name": "Fireflies and the Forest"
+    },
+    {
+     "rank": 2,
+     "name": "Shadow Creed"
+    },
+    {
+     "rank": 3,
+     "name": "Lost Radiance"
+    },
+    {
+     "rank": 4,
+     "name": "Devil's Blood: Curse"
+    }
+   ],
+   "variants": [
+    {
+     "name": "Recommended",
+     "targets": [
+      {
+       "stat": "CritBase",
+       "target": 0.85
+      },
+      {
+       "stat": "CritDamageBase",
+       "target": 1.0
+      },
+      {
+       "stat": "DamageUpGeneralBase",
+       "target": 0.1
+      },
+      {
+       "stat": "DamageUpNatureBase",
+       "target": 0.475
+      }
+     ],
+     "priority": [
+      "CritBase",
+      "CritDamageBase",
+      "AtkUp",
+      "DamageUpGeneralBase",
+      "AtkAdd"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "Sagiri",
+   "source": "https://www.prydwen.gg/neverness-to-everness/characters/sakiri",
+   "updated": "2026-08-21",
+   "sets": [
+    {
+     "rank": 1,
+     "name": "Speedy Hedgehog"
+    },
+    {
+     "rank": 2,
+     "name": "Crimson: Twin Butterflies"
+    }
+   ],
+   "variants": [
+    {
+     "name": "Recommended",
+     "targets": [
+      {
+       "stat": "CritBase",
+       "target": 0.5
+      },
+      {
+       "stat": "CritDamageBase",
+       "target": 1.0
+      },
+      {
+       "stat": "UnbalIntensityBase",
+       "target": 50.0
+      },
+      {
+       "stat": "DamageUpGeneralBase",
+       "target": 0.1
+      },
+      {
+       "stat": "DamageUpIncantationBase",
+       "target": 0.54
+      }
+     ],
+     "priority": [
+      "CritDamageBase",
+      "CritBase",
+      "AtkUp",
+      "AtkAdd",
+      "UnbalIntensityBase",
+      "MagBase"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "Shinku",
+   "source": "https://www.prydwen.gg/neverness-to-everness/characters/shinku",
+   "updated": "2026-08-21",
+   "sets": [
+    {
+     "rank": 1,
+     "name": "Lost Radiance"
+    },
+    {
+     "rank": 2,
+     "name": "Street Boxer"
+    },
+    {
+     "rank": 3,
+     "name": "Fireflies and the Forest"
+    }
+   ],
+   "variants": [
+    {
+     "name": "Recommended",
+     "targets": [
+      {
+       "stat": "CritBase",
+       "target": 0.75
+      },
+      {
+       "stat": "CritDamageBase",
+       "target": 1.5
+      },
+      {
+       "stat": "DamageUpGeneralBase",
+       "target": 0.15
+      },
+      {
+       "stat": "DamageUpCosmosBase",
+       "target": 0.1
+      }
+     ],
+     "priority": [
+      "CritBase",
+      "CritDamageBase",
+      "DamageUpGeneralBase",
+      "AtkUp",
+      "AtkAdd"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "Skia",
+   "source": "https://www.prydwen.gg/neverness-to-everness/characters/skia",
+   "updated": "2026-08-21",
+   "sets": [
+    {
+     "rank": 1,
+     "name": "Street Boxer"
+    },
+    {
+     "rank": 2,
+     "name": "Shadow Creed"
+    }
+   ],
+   "variants": [
+    {
+     "name": "Recommended",
+     "targets": [
+      {
+       "stat": "CritBase",
+       "target": 0.3
+      },
+      {
+       "stat": "CritDamageBase",
+       "target": 1.35
+      },
+      {
+       "stat": "DamageUpGeneralBase",
+       "target": 0.15
+      },
+      {
+       "stat": "DamageUpLakshanaBase",
+       "target": 0.375
+      }
+     ],
+     "priority": [
+      "CritBase",
+      "CritDamageBase",
+      "DamageUpGeneralBase",
+      "AtkUp",
+      "AtkAdd"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "Zankou",
+   "source": "https://www.prydwen.gg/neverness-to-everness/characters/zankou",
+   "updated": "2026-08-21",
+   "sets": [
+    {
+     "rank": 1,
+     "name": "Crimson: Twin Butterflies"
+    },
+    {
+     "rank": 2,
+     "name": "Lost Radiance"
+    },
+    {
+     "rank": 3,
+     "name": "Shadow Creed"
+    }
+   ],
+   "variants": [
+    {
+     "name": "Recommended",
+     "targets": [
+      {
+       "stat": "CritBase",
+       "target": 0.6
+      },
+      {
+       "stat": "CritDamageBase",
+       "target": 2.0
+      },
+      {
+       "stat": "MagBase",
+       "target": 200.0
+      },
+      {
+       "stat": "DamageUpGeneralBase",
+       "target": 0.1
+      },
+      {
+       "stat": "DamageUpIncantationBase",
+       "target": 0.1
+      }
+     ],
+     "priority": [
+      "CritDamageBase",
+      "MagBase",
+      "CritBase",
+      "DamageUpGeneralBase",
+      "AtkUp",
+      "UnbalIntensityBase"
+     ]
+    },
+    {
+     "name": "SubDPS",
+     "targets": [
+      {
+       "stat": "CritBase",
+       "target": 0.6
+      },
+      {
+       "stat": "CritDamageBase",
+       "target": 2.0
+      },
+      {
+       "stat": "MagBase",
+       "target": 200.0
+      },
+      {
+       "stat": "DamageUpGeneralBase",
+       "target": 0.1
+      },
+      {
+       "stat": "DamageUpIncantationBase",
+       "target": 0.1
+      }
+     ],
+     "priority": [
+      "CritDamageBase",
+      "MagBase",
+      "DamageUpGeneralBase",
+      "CritBase",
+      "AtkUp",
+      "UnbalIntensityBase"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "Female046",
+   "source": "https://www.prydwen.gg/neverness-to-everness/characters/zero",
+   "updated": "2026-08-21",
+   "sets": [
+    {
+     "rank": 1,
+     "name": "Speedy Hedgehog"
+    },
+    {
+     "rank": 2,
+     "name": "Lost Radiance"
+    },
+    {
+     "rank": 3,
+     "name": "Fireflies and the Forest"
+    },
+    {
+     "rank": 4,
+     "name": "Shadow Creed"
+    }
+   ],
+   "variants": [
+    {
+     "name": "Day Off",
+     "targets": [
+      {
+       "stat": "CritBase",
+       "target": 0.45
+      },
+      {
+       "stat": "CritDamageBase",
+       "target": 1.0
+      },
+      {
+       "stat": "DamageUpGeneralBase",
+       "target": 0.1
+      },
+      {
+       "stat": "MagBase",
+       "target": 50.0
+      }
+     ],
+     "priority": [
+      "CritDamageBase",
+      "CritBase",
+      "DamageUpGeneralBase",
+      "AtkUp",
+      "AtkAdd"
+     ]
+    },
+    {
+     "name": "The Rain That Shook the World",
+     "targets": [
+      {
+       "stat": "CritBase",
+       "target": 0.45
+      },
+      {
+       "stat": "CritDamageBase",
+       "target": 0.9
+      },
+      {
+       "stat": "DamageUpGeneralBase",
+       "target": 0.1
+      },
+      {
+       "stat": "MagBase",
+       "target": 250.0
+      }
+     ],
+     "priority": [
+      "MagBase",
+      "CritBase",
+      "CritDamageBase",
+      "DamageUpGeneralBase",
+      "AtkUp",
+      "AtkAdd"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "Female051",
+   "source": "https://www.prydwen.gg/neverness-to-everness/characters/zero",
+   "updated": "2026-08-21",
+   "sets": [
+    {
+     "rank": 1,
+     "name": "Speedy Hedgehog"
+    },
+    {
+     "rank": 2,
+     "name": "Lost Radiance"
+    },
+    {
+     "rank": 3,
+     "name": "Fireflies and the Forest"
+    },
+    {
+     "rank": 4,
+     "name": "Shadow Creed"
+    }
+   ],
+   "variants": [
+    {
+     "name": "Day Off",
+     "targets": [
+      {
+       "stat": "CritBase",
+       "target": 0.45
+      },
+      {
+       "stat": "CritDamageBase",
+       "target": 1.0
+      },
+      {
+       "stat": "DamageUpGeneralBase",
+       "target": 0.1
+      },
+      {
+       "stat": "MagBase",
+       "target": 50.0
+      }
+     ],
+     "priority": [
+      "CritDamageBase",
+      "CritBase",
+      "DamageUpGeneralBase",
+      "AtkUp",
+      "AtkAdd"
+     ]
+    },
+    {
+     "name": "The Rain That Shook the World",
+     "targets": [
+      {
+       "stat": "CritBase",
+       "target": 0.45
+      },
+      {
+       "stat": "CritDamageBase",
+       "target": 0.9
+      },
+      {
+       "stat": "DamageUpGeneralBase",
+       "target": 0.1
+      },
+      {
+       "stat": "MagBase",
+       "target": 250.0
+      }
+     ],
+     "priority": [
+      "MagBase",
+      "CritBase",
+      "CritDamageBase",
+      "DamageUpGeneralBase",
+      "AtkUp",
+      "AtkAdd"
+     ]
+    }
+   ]
+  }
+ ]
 }

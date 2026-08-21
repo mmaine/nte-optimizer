@@ -21,11 +21,26 @@ export interface GuideVariant {
   priority: string[];
 }
 
+/** A recommended cartridge set, in the order the guide ranks them. */
+export interface GuideSet {
+  rank: number;
+  /** The published name, which is also its key in `set-bonuses.json`. */
+  name: string;
+}
+
 export interface CharacterGuide {
   /** The `GA_<key>_*` ability key, so it joins to a capture directly. */
   key: string;
   source: string;
   updated: string;
+  /**
+   * The guide's ranked cartridge recommendation, recorded as published.
+   *
+   * Nothing in the solve reads this: the solver enumerates every set the player
+   * owns and is free to disagree, which is the point of running it. It is kept
+   * so the published recommendation can be shown beside the solved build.
+   */
+  sets?: GuideSet[];
   variants: GuideVariant[];
 }
 
